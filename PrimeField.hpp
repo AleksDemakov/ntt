@@ -1,11 +1,11 @@
 #ifndef PRIME_FIELD_INCLUDED
 #define PRIME_FIELD_INCLUDED
-
-#include <ostream>
-
+#include<bits/stdc++.h>
+using namespace std;
 template< int p >
 class PrimeField {
     public:
+    int value;
 
     static int from_int(int v) {
         return ( v < 0 ? p - (-v % p) : (v % p) );
@@ -15,6 +15,7 @@ class PrimeField {
         PrimeField<p> res(a);
         return binpow(res, n);
     }
+    //binary exponentation
     PrimeField<p> binpow(PrimeField<p> a, int n){
         if(n==0)return 1;
         if(n==1)return a;
@@ -23,14 +24,35 @@ class PrimeField {
         return res * res;
     }
     
-    int value;
-        PrimeField(int v = 0) : value( from_int(v) ) {}
+    PrimeField(int v = 0) : value( from_int(v) ) {}
     PrimeField<p> operator = (int n){
         value = n;
     }
-    //reverse value
+    //reverse value in module P
     PrimeField<p>& operator~ (){
         return *(new PrimeField<p>(binpow(value, p - 2)));
+    }
+
+    //https://cp-algorithms.com/algebra/primitive-root.html
+    PrimeField<p>& get_generator(){
+        vector<int> fact;
+        int phi = p-1,  n = phi;
+        for (int i=2; i*i<=n; ++i)
+            if (n % i == 0) {
+                fact.push_back (i);
+                while (n % i == 0)
+                    n /= i;
+            }
+        if (n > 1)
+            fact.push_back (n);
+
+        for (int res=2; res<=p; ++res) {
+            bool ok = true;
+            for (size_t i=0; i<fact.size() && ok; ++i)
+                ok &= binpow (res, phi / fact[i]) != 1;
+            if (ok)  return *(new PrimeField<p>(res));
+        }
+        return *(new PrimeField<p>(-1));
     }
     PrimeField<p> & operator += (PrimeField<p> v) {
 
@@ -107,6 +129,7 @@ class PrimeField {
     }
 
 };
+//exponentiation
 template< int p >
 PrimeField< p > operator ^ (PrimeField<p> a, int n) {
     return a.binpow(a, n);
