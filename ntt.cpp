@@ -2,8 +2,8 @@
 #include "PrimeField.hpp"
 #define ll long long
 using namespace std;
-const int p = 998244353;
-PrimeField<p> root = 3;
+const int p = 998244353;//998244353
+PrimeField<p> root=root.get_generator();
 void fft (vector<PrimeField<p> > &a, bool invert) {
 	int n = (int) a.size();
 	if (n == 1)  return;
